@@ -1,9 +1,10 @@
 from typing import Dict
+from jsonSerializable import JsonSerializable
 
 from aioxmpp.xso.types import Integer
 
 
-class WarehouseStateReport:
+class WarehouseStateReport(JsonSerializable):
 	def __init__(self, contents: Dict, freeCapacity: Integer) -> None:
 		self.contents = contents
 		self.freeCapacity = freeCapacity

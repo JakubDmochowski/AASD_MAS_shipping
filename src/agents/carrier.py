@@ -6,69 +6,71 @@ from spade.message import Message
 from spade.template import Template
 import json
 from messages.carrierDetailsReport import CarrierDetailsReport
+from messages.deliveryConfirmation import DeliveryConfirmation
+from messages.transportProposal import TransportProposal
 
 class CarrierAgent(agent.Agent):
 	class RecvDetailsRequestBehav(OneShotBehaviour):
 		async def run(self):
 			print("RecvDetailsRequestBehav running")
 
-			msg = await self.receive(timeout=100) # wait for a message for 10 seconds
+			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Message received with content: {}".format(msg.body))
+				print("Carrier details request received with content: {}".format(msg.body))
 				await self.send(self.agent.generateCarrierDetailsReport(msg))
 			else:
-				print("Did not received any message after 100 seconds")
+				print("Did not received any carrier details request after 100 seconds")
 	
 	class RecvTranspOfferGenerateProposalBehav(OneShotBehaviour):
 		async def run(self):
 			print("RecvTranspOfferGenerateProposalBehav running")
 
-			msg = await self.receive(timeout=100) # wait for a message for 10 seconds
+			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Message received with content: {}".format(msg.body))
+				print("Transport offer received with content: {}".format(msg.body))
 				await self.send(self.agent.generateTransportProposal(msg))
 			else:
-				print("Did not received any message after 100 seconds")
+				print("Did not received any transport offer after 100 seconds")
 
 	class RecvTranspContractGenerateConfirmBehav(OneShotBehaviour):
 		async def run(self):
 			print("RecvTranspContractGenerateConfirmBehav running")
 
-			msg = await self.receive(timeout=100) # wait for a message for 10 seconds
+			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Message received with content: {}".format(msg.body))
+				print("Transport contract received with content: {}".format(msg.body))
 				await self.send(self.agent.generateTransportConfirmation(msg))
 			else:
-				print("Did not received any message after 100 seconds")
+				print("Did not received any transport contract after 100 seconds")
 
 	class RecvTranspOfferResolved(OneShotBehaviour):
 		async def run(self):
 			print("RecvTranspContractGenerateConfirmBehav running")
 
-			msg = await self.receive(timeout=100) # wait for a message for 10 seconds
+			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Message received with content: {}".format(msg.body))
+				print("Transport offer resolved msg received with content: {}".format(msg.body))
 				await self.send(self.agent.generateACK(msg))
 			else:
-				print("Did not received any message after 100 seconds")
+				print("Did not received transport offer resolved after 100 seconds")
 	
-	# # TODO: this should be more like a state in FSM than OneShotBehaviour
-	# class DeliveryConfirmationBehav(OneShotBehaviour):
-    # 	async def run(self):
-	# 		print("RecvTranspOfferGenerateProposalBehav running")
+	# TODO: this should be more like a state in FSM than OneShotBehaviour
+	class DeliveryConfirmationBehav(OneShotBehaviour):
+		async def run(self):
+			print("DeliveryConfirmationBehav running")
 
-	# 		msg = await self.receive(timeout=100) # wait for a message for 10 seconds
-	# 		if msg:
-	# 			print("Message received with content: {}".format(msg.body))
-	# 			await self.send(self.agent.generateTransportProposal(msg))
-	# 		else:
-	# 			print("Did not received any message after 100 seconds")	
+			msg = Message(to="receiver@localhost")
+			msg.set_metadata('performative', 'info')
+			msg.body = (DeliveryConfirmation(True)).toJSON
+			await self.send(msg)
+			print("Confirmation sent!")
 
 
 	def __init__(self, jid: str, password: str, load_capacity: Integer, availability: bool):
 		super().__init__(jid, password, verify_security=False)
 		self.load_capacity = load_capacity
 		self.availability = availability
+		self.delivery_count = 0
 	
 	async def setup(self):
 		print("CarrierAgent started")

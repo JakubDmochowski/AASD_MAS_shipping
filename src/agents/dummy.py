@@ -3,6 +3,7 @@ from spade.behaviour import OneShotBehaviour
 from spade.template import Template
 
 from common import Performative, setPerformative
+from messages.transportOffer import TransportOffer
 
 class DummyAgent(agent.Agent):
 	class InformBehav(OneShotBehaviour):
@@ -12,6 +13,13 @@ class DummyAgent(agent.Agent):
 			setPerformative(msg, Performative.Query)
 
 			await self.send(msg)
+
+			offer = message.Message(to="carrier@localhost")
+			offer.set_metadata("performative", "cfp")
+			offer.body = (TransportOffer(5, "a", "b", {}, 5)).toJSON()
+
+			await self.send(offer)
+			await self.send(offer)
 			print("Message sent!")
 
 	class RecvBehav(OneShotBehaviour):

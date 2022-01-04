@@ -19,7 +19,7 @@ class Performative(Enum):
 	Query = 'query'
 
 def setPerformative(msg: Any, performative: Performative) -> None:
-	msg.set_metadata('performative', performative)
+	msg.set_metadata('performative', performative.value)
 
 def getPerformative(msg: Any) -> Performative:
 	return Performative(msg.metadata['performative'])

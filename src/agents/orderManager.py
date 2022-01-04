@@ -131,19 +131,19 @@ class OrderManager(agent.Agent):
 		print("Initialized OrderManager agent {}".format(str(self.jid)))
 		
 		recvStateReportTemplate = Template()
-		recvStateReportTemplate.set_metadata("performative", "inform")
+		setPerformative(recvStateReportTemplate, Performative.Inform)
 		self.add_behaviour(self.RecvStateReport(), recvStateReportTemplate)
 
 		recvTransportRequestTemplate = Template()
-		recvTransportRequestTemplate.set_metadata("performative", "propose")
+		setPerformative(recvTransportRequestTemplate, Performative.Propose)
 		self.add_behaviour(self.RecvTransportRequest(), recvTransportRequestTemplate)
 
 		recvTransportOfferTemplate = Template()
-		recvTransportOfferTemplate.set_metadata("performative", "propose")
+		setPerformative(recvTransportOfferTemplate, Performative.Propose)
 		self.add_behaviour(self.RecvTransportOffer(), recvTransportOfferTemplate)
 
 		recvTransportProposalTemplate = Template()
-		recvTransportProposalTemplate.set_metadata("performative", "propose")
+		setPerformative(recvTransportProposalTemplate, Performative.Propose)
 		self.add_behaviour(self.RecvTransportProposal(), recvTransportProposalTemplate)
 
 		self.add_behaviour(self.RecvTransportConfirmation())

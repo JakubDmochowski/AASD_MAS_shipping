@@ -12,9 +12,9 @@ class WarehouseAgent(agent.Agent):
 	def __init__(self, jid: str, password: str, capacity: Integer):
 		super().__init__(jid, password, verify_security=False)
 		self.capacity = capacity
-		self.contents = dict()
+		self.contents: Dict[str, Integer] = dict()
 
-	async def setup(self):
+	async def setup(self) -> None:
 		print("Hello World! I'm agent {}".format(str(self.jid)))
 		template = Template()
 		template.set_metadata('performative', 'query')
@@ -26,7 +26,7 @@ class WarehouseRecieverBehaviour(OneShotBehaviour):
 		super().__init__()
 		self._parent = parent
 
-	async def run(self):
+	async def run(self) -> None:
 		msg = await self.receive(timeout=100)
 		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
 		if 'performative' in msg.metadata:

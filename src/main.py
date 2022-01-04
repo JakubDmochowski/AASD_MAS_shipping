@@ -21,6 +21,6 @@ client = Client("student1@01337.io", "student1",order, "student2@01337.io" )
 client_result = client.start()
 client_result.result()
 
-time.sleep(120)
+time.sleep(10)
 quit_spade()
 

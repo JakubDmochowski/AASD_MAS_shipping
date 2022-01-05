@@ -16,7 +16,7 @@ class DummyAgent(agent.Agent):
 
 			offer = message.Message(to="carrier@localhost")
 			offer.set_metadata("performative", "cfp")
-			offer.body = (TransportOffer(5, "a", "b", {}, 5)).toJSON()
+			offer.body = (TransportOffer("a", "b", {}, 5, "1")).toJSON()
 
 			await self.send(offer)
 			await self.send(offer)

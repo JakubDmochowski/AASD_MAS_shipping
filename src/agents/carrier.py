@@ -107,7 +107,7 @@ class CarrierAgent(agent.Agent):
 		proposalMsg.set_metadata("performative", "propose")
 		offer = TransportOffer()
 		offer.fromJSON(msg.body)
-		proposalMsg.body = (TransportProposal(offer.src, offer.dst, self.delivery_count, "", offer.price)).toJSON()
+		proposalMsg.body = (TransportProposal(offer.src, offer.dst, self.delivery_count, "", offer.price, offer.threadId)).toJSON()
 		self.delivery_count += 1
 		return proposalMsg
 

@@ -2,7 +2,7 @@ from typing import Dict
 from jsonSerializable import JsonSerializable
 
 class TransportOffer(JsonSerializable):
-	def __init__(self, src, dst, contents: Dict[str, int], capacity: int, threadId: str) -> None:
+	def __init__(self, src="", dst="", contents: Dict[str, int]={}, capacity: int=0, threadId: str="0") -> None:
 		self.src = src
 		self.dst = dst
 		self.contents = contents

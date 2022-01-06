@@ -1,14 +1,15 @@
-import datetime
-import json
-from typing import Dict
-from aioxmpp.xso.types import JSON, Integer
+import random
+
+from aioxmpp.xso.types import Integer
 from spade import agent
-from spade.behaviour import OneShotBehaviour, CyclicBehaviour, PeriodicBehaviour
+from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
 
 from messages.carrierDetailsReport import CarrierDetailsReport
 from messages.deliveryConfirmation import DeliveryConfirmation
+from messages.transportConfirmationRequest import TransportConfirmationRequest
+from messages.transportContractConfirmation import TransportContractConfirmation
 from messages.transportOffer import TransportOffer
 from messages.transportProposal import TransportProposal
 
@@ -50,9 +51,6 @@ class CarrierAgent(agent.Agent):
 				out = self.agent.generateTransportConfirmation(msg)
 				await self.send(out)
 				print("Send contract confirmation with content: {}".format(out.body))
-
-				startAt = datetime.datetime.now() + datetime.timedelta(seconds=100)
-				self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav(startAt=startAt))
 			else:
 				print("Did not received any transport contract after 100 seconds")
 
@@ -67,19 +65,44 @@ class CarrierAgent(agent.Agent):
 			else:
 				print("Did not received transport offer resolved after 100 seconds")
 	
-	class DeliveryConfirmationBehav(PeriodicBehaviour):
+	class DeliveryConfirmationBehav(OneShotBehaviour):
 		async def run(self):
-			print("DeliveryConfirmationBehav running")
+			for manager, proposal in self.agent.handledOffers.items():
+				msg = Message(to=manager)
+				msg.set_metadata('performative', 'info')
+				msg.body = (DeliveryConfirmation(True, proposal)).toJSON()
+				await self.send(msg)
+				print("Product delivered from {} to {}".format(proposal.offer.src, proposal.offer.dst))
+				del self.agent.handledOffers[manager]
 
-			msg = Message(to="receiver@localhost")
-			msg.set_metadata('performative', 'info')
-			msg.body = (DeliveryConfirmation(True)).toJSON()
-			await self.send(msg)
-			print("Delivery confirmation sent!")
+	class ReceiveProductBehav(OneShotBehaviour):
+		async def run(self):
+			print("ReceiveProductBehav running")
+
+			for _, proposal in self.agent.handledOffers.items():
+				msg = Message(to=proposal.offer.src)
+				msg.set_metadata('performative', 'giveDeliveryToCarrier')
+				msg.body = {} #TODO fill content
+				await self.send(msg)
+				print("Delivery started, product taken from source!")
+				self.agent.add_behaviour(self.agent.DeliverProductBehav())
+	
+	class DeliverProductBehav(OneShotBehaviour):
+		async def run(self):
+			print("DeliverProductBehav running")
+
+			for _, proposal in self.agent.handledOffers.items():
+				msg = Message(to=proposal.offer.dst)
+				msg.set_metadata('performative', 'receiveDeliveryFromCarrier')
+				msg.body = {} #TODO fill content
+				await self.send(msg)
+				print("Delivery ended, product delivered to destination!")
+				self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())
 
 
 	def __init__(self, jid: str, password: str, load_capacity: Integer, availability: bool):
 		super().__init__(jid, password, verify_security=False)
+		self.handledTransports = dict()
 		self.load_capacity = load_capacity
 		self.availability = availability
 		self.delivery_count = 0
@@ -107,7 +130,7 @@ class CarrierAgent(agent.Agent):
 		proposalMsg.set_metadata("performative", "propose")
 		offer = TransportOffer()
 		offer.fromJSON(msg.body)
-		proposalMsg.body = (TransportProposal(offer.src, offer.dst, self.delivery_count, "", offer.price, offer.threadId)).toJSON()
+		proposalMsg.body = (TransportProposal(offer, self.delivery_count, random.randint(50, 100))).toJSON()
 		self.delivery_count += 1
 		return proposalMsg
 
@@ -120,8 +143,11 @@ class CarrierAgent(agent.Agent):
 	def generateTransportConfirmation(self, msg: Message) -> Message:
 		confirmMsg = Message(to=str(msg.sender), sender=str(self.jid))
 		confirmMsg.set_metadata("performative", "confirm")
-		# contract = json.loads(msg.body)
-		# TODO fill confirmation's content based on the received contract
+		contract = TransportConfirmationRequest()
+		contract.fromJSON(msg.body)
+		confirmMsg.body = (TransportContractConfirmation(contract.proposal)).toJSON()
+
+		self.handledTransports[msg.sender] = contract.proposal
 		return confirmMsg
 	
 	def generateACK(self, msg: Message) -> Message:

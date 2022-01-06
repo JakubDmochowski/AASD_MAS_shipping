@@ -91,7 +91,9 @@ class OrderManager(agent.Agent):
 			if msg:
 				for thread in ag.transportThreads:
 					if msg.thread == thread.id:
-						thread.proposals.append(TransportProposal(msg.body))
+						proposal = TransportProposal()
+						proposal.fromJSON(msg.body)
+						thread.proposals.append(proposal)
 						thread.last_update = datetime.now()
 					# thread.proposals.sort(desc=true)
 				print(f"OrderManager transport proposal received: {msg.body}")

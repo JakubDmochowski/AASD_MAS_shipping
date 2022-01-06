@@ -1,10 +1,9 @@
 from typing import Dict
-from aioxmpp.xso.types import JSON, Integer
+from aioxmpp.xso.types import Integer
 from spade import agent
-from spade.behaviour import CyclicBehaviour, OneShotBehaviour
+from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
-import json
 from common import Performative, getPerformative, setPerformative
 from messages.carrierDeliveryItems import CarrierDeliveryItems
 from messages.warehouseStateReport import WarehouseStateReport
@@ -32,6 +31,13 @@ class WarehouseAgent(agent.Agent):
 			if key in self.contents:
 				self.contents[key] = 0
 			self.contents[key] = self.contents[key] + value
+
+	def takeItems(self, items: Dict[str, Integer]):
+		#todo: ensure there is capacity
+		for key, value in items.items():
+			if key in self.contents:
+				self.contents[key] = 0
+			self.contents[key] = self.contents[key] - value
 
 
 class WarehouseReportRequestRecieverBehaviour(CyclicBehaviour):
@@ -70,6 +76,27 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 			reply = Message(to= str(msg.sender), body='ok')
 			setPerformative(reply, Performative.Inform)
 			await self.send(msg)
+		
+
+	def prepareWarehouseReportMessage(self, msg: Message) -> Message:
+		response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)
+		setPerformative(response, Performative.Inform)
+		response.body = (WarehouseStateReport(self._parent.contents, self._parent.capacity)).toJSON()
+		return response
+
+class WarehousePickupRecieverBehaviour(CyclicBehaviour):
+	def __init__(self, parent: WarehouseAgent):
+		super().__init__()
+		self._parent = parent
+
+	async def run(self) -> None:
+		msg = await self.receive(timeout=100)
+		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
+		
+		if msg.get_metadata('performative') == 'giveDeliveryToCarrier':
+			items = CarrierDeliveryItems({})
+			items.fromMsg(msg)
+			self._parent.takeItems(items.content)
 		
 
 	def prepareWarehouseReportMessage(self, msg: Message) -> Message:

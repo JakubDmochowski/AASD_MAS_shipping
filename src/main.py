@@ -19,12 +19,12 @@ y.result()
 future = dummy.start()
 
 content = {"orange":2}
-shop=Shop("student2@01337.io", "student2",content, availabilityManJiD="student4@01337.io",orderManJiD="student4@01337.io")
+shop=Shop("student2@localhost", "student2",content, availabilityManJiD="student4@localhost",orderManJiD="student4@localhost")
 shop_result = shop.start()
 shop_result.result()
 
 order = {"orange":3}
-client = Client("student1@01337.io", "student1",order, shop_name="student2@01337.io" )
+client = Client("student1@localhost", "student1",order, shop_name="student2@localhost" )
 client_result = client.start()
 client_result.result()
 

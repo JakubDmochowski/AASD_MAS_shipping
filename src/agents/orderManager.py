@@ -193,7 +193,7 @@ class OrderManager(agent.Agent):
 		msg = Message()
 		msg.to = proposal.sender
 		msg.thread = thread.id
-		msg.body = TransportConfirmationRequest(proposal).toJSON()
+		msg.body = TransportConfirmationRequest(TransportProposal.fromMsg(proposal)).toJSON()
 		return msg
 
 	class ReceiverBehaviour():

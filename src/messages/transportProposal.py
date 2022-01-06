@@ -10,3 +10,13 @@ class TransportProposal(JsonSerializable):
 		self.price = price
 		self.threadId = threadId
 
+	@classmethod
+	def fromMsg(self, msg):
+		msgBody = JSON.loads(msg.body)
+		self.src = msgBody['src']
+		self.dst = msgBody['dst']
+		self.delivery_no = msgBody['delivery_no']
+		self.delivery_time = msgBody['delivery_time']
+		self.price = msgBody['price']
+		self.threadId = msgBody['threadId']
+		return self

@@ -5,6 +5,7 @@ from spade import agent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
+from messages.carrierDeliveryItems import CarrierDeliveryItems
 
 from messages.carrierDetailsReport import CarrierDetailsReport
 from messages.deliveryConfirmation import DeliveryConfirmation
@@ -51,6 +52,7 @@ class CarrierAgent(agent.Agent):
 				out = self.agent.generateTransportConfirmation(msg)
 				await self.send(out)
 				print("Send contract confirmation with content: {}".format(out.body))
+				self.agent.add_behaviour(self.agent.ReceiveProductBehav())
 			else:
 				print("Did not received any transport contract after 100 seconds")
 
@@ -82,7 +84,7 @@ class CarrierAgent(agent.Agent):
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.src)
 				msg.set_metadata('performative', 'giveDeliveryToCarrier')
-				msg.body = {} #TODO fill content
+				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
 				print("Delivery started, product taken from source!")
 				self.agent.add_behaviour(self.agent.DeliverProductBehav())
@@ -94,7 +96,7 @@ class CarrierAgent(agent.Agent):
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.dst)
 				msg.set_metadata('performative', 'receiveDeliveryFromCarrier')
-				msg.body = {} #TODO fill content
+				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
 				print("Delivery ended, product delivered to destination!")
 				self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())

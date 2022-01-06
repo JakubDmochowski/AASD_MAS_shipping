@@ -3,7 +3,7 @@ from spade.template import Template
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from messages.shopInventoryReport import shopInventoryReport
-from messages.carrierDeliveryItems import carrierDeliveryItems
+from messages.carrierDeliveryItems import CarrierDeliveryItems
 from messages.clientOrderRequest import clientOrderRequest
 from messages.transportRequest import TransportRequest
 from common import Performative
@@ -56,12 +56,12 @@ class Shop(agent.Agent):
     def generateOrderForCarrier(self, to, content) -> Message:
         OrderForCarrierMsg = Message(to=str(to), sender=str(self.jid))
         OrderForCarrierMsg.set_metadata("performative", "orderFromShopToCarrier")
-        OrderForCarrierMsg.body = (carrierDeliveryItems(content)).toJSON()
+        OrderForCarrierMsg.body = (CarrierDeliveryItems(content)).toJSON()
         return OrderForCarrierMsg
 
-    def getDeliveryItems(self, msg) -> carrierDeliveryItems:
+    def getDeliveryItems(self, msg) -> CarrierDeliveryItems:
         msgBody = json.loads(msg.body)
-        return carrierDeliveryItems(
+        return CarrierDeliveryItems(
             content=msgBody['content']
         )
 

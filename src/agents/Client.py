@@ -17,7 +17,7 @@ class Client(agent.Agent):
 
 		orderReadyToPickTemplate = Template()
 		orderReadyToPickTemplate.set_metadata("performative", "orderReadyToPick")
-		self.add_behaviour(OrderReadyToOrderInfo(self), orderReadyToPickTemplate)
+		self.add_behaviour(OrderReadyToPickInfo(self), orderReadyToPickTemplate)
 
 	def generateOrderRequest(self, to, order) -> Message:
 		OrderRequestMsg = Message(to=str(to), sender=str(self.jid))
@@ -34,7 +34,7 @@ class SendOrderRequest(OneShotBehaviour):
 		await self.send(self._parent.generateOrderRequest(to=self._parent.shop_name,order=self._parent.order))
 		print("Order sent!")
 
-class OrderReadyToOrderInfo(CyclicBehaviour):
+class OrderReadyToPickInfo(CyclicBehaviour):
 	def __init__(self, parent: Client):
 		super().__init__()
 		self._parent = parent

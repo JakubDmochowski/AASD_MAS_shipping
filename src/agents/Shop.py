@@ -62,7 +62,7 @@ class Shop(agent.Agent):
     def getDeliveryItems(self, msg) -> carrierDeliveryItems:
         msgBody = json.loads(msg.body)
         return carrierDeliveryItems(
-            order=msgBody['content']
+            content=msgBody['content']
         )
 
     def getClientOrderRequest(self, msg) -> clientOrderRequest:
@@ -157,7 +157,7 @@ class RecvDelivery(CyclicBehaviour):
                     await self.send(self._parent.generateOrderReadToPickInfo(to=client))
                     client_to_pop_list.append(client)
             for client_to_pop in client_to_pop_list:
-                del self._praent.clients_orders[client_to_pop]
+                del self._parent.clients_orders[client_to_pop]
 
             print("Shop: Sending inventory")
             await self.send(self._parent.generateInventoryReport(to=self._parent.availabilityManJiD,
@@ -187,6 +187,7 @@ class RecvOrderRequest(CyclicBehaviour):
                             change = 1
                         # jezeli czesc jest na stocku
                         missing_products[product] = clientOrderRequest.order[product] - self._parent.content[product]
+                        self._parent.content[product]=0
                     else:
                         self._parent.content[product] = self._parent.content[product] - clientOrderRequest.order[
                             product]
@@ -211,9 +212,4 @@ class RecvOrderRequest(CyclicBehaviour):
                 await self.send(self._parent.generateTransportRequest(to=self._parent.orderManJiD,
                                                                       order=self._parent.clients_orders[msg.sender]))
                 print("Shop: transport request sent")
-            # TODO monitor deliveries
-        # sprawdzenie czy mozna zakonczyc zamówienie klienta
-        # jezeli dostawa zmienia stan magazynu send -> inventory report
 
-# else:
-# print("Did not received any order Request from client for 60 seconds")

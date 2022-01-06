@@ -30,7 +30,7 @@ client_result.result()
 time.sleep(10)
 while warehouse.is_alive() or carrier.is_alive() or shop.is_alive() or client.is_alive():
     try:
-        time.sleep(1)
+         time.sleep(1)
     except KeyboardInterrupt:
         warehouse.stop()
         carrier.stop()

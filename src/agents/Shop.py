@@ -64,6 +64,13 @@ class Shop(agent.Agent):
         OrderForCarrierMsg.body = (CarrierDeliveryItems(content)).toJSON()
         return OrderForCarrierMsg
 
+    def generateDeliveryReceiveConfirm(self, to, content) -> Message:
+        ReceivedFromCarrierMsg = Message(to=str(to), sender=str(self.jid))
+        ReceivedFromCarrierMsg.set_metadata("performative", "confirm")
+        ReceivedFromCarrierMsg.set_metadata("protocol", "receiveDeliveryFromCarrier")
+        ReceivedFromCarrierMsg.body = (CarrierDeliveryItems(content)).toJSON()
+        return ReceivedFromCarrierMsg
+
     def getDeliveryItems(self, msg) -> CarrierDeliveryItems:
         msgBody = json.loads(msg.body)
         return CarrierDeliveryItems(
@@ -137,7 +144,8 @@ class RecvDelivery(CyclicBehaviour):
                         self._parent.content[product_delivered] += qty_delivered
                     else:
                         self._parent.content[product_delivered] = qty_delivered
-
+            print("Shop: Sending confirmation of delivery to carrier")
+            await self.send(self._parent.generateDeliveryReceiveConfirm(to=self._parent.msg.sender, content=carrierDelivery.content))
             # check if delivery can close any order
             for client in self._parent.clients_orders:
                 product_to_pop_from_order = []

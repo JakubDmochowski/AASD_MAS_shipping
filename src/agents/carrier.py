@@ -87,8 +87,14 @@ class CarrierAgent(agent.Agent):
 				msg.set_metadata('protocol', 'giveDeliveryToCarrier')
 				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
-				print("Delivery started, product taken from source!")
-				self.agent.add_behaviour(self.agent.DeliverProductBehav())
+
+				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
+				if msg and msg["performative"] == "orderFromShopToCarrier":
+					print("Delivery started, product taken from source!: {}".format(msg.body))
+					self.agent.add_behaviour(self.agent.DeliverProductBehav())
+				else:
+					print("Did not received delivery products")
+
 	
 	class DeliverProductBehav(OneShotBehaviour):
 		async def run(self):
@@ -100,9 +106,13 @@ class CarrierAgent(agent.Agent):
 				msg.set_metadata('protocol', 'receiveDeliveryFromCarrier')
 				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
-				print("Delivery ended, product delivered to destination!")
-				self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())
 
+				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
+				if msg and msg["performative"] == "receiveDeliveryFromCarrier":
+					print("Delivery ended, product delivered to destination!; {}".format(msg.body))
+					self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())
+				else:
+					print("Did not received delivery products")
 
 	def __init__(self, jid: str, password: str, load_capacity: Integer, availability: bool):
 		super().__init__(jid, password, verify_security=False)

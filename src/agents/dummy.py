@@ -19,7 +19,6 @@ class DummyAgent(agent.Agent):
 			offer.body = (TransportOffer("a", "b", {}, 5, "1")).toJSON()
 
 			await self.send(offer)
-			await self.send(offer)
 			print("Message sent!")
 
 	class RecvBehav(OneShotBehaviour):

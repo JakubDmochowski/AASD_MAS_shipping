@@ -83,7 +83,8 @@ class CarrierAgent(agent.Agent):
 
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.src)
-				msg.set_metadata('performative', 'giveDeliveryToCarrier')
+				msg.set_metadata('performative', 'confirm')
+				msg.set_metadata('protocol', 'giveDeliveryToCarrier')
 				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
 				print("Delivery started, product taken from source!")
@@ -95,7 +96,8 @@ class CarrierAgent(agent.Agent):
 
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.dst)
-				msg.set_metadata('performative', 'receiveDeliveryFromCarrier')
+				msg.set_metadata('performative', 'request')
+				msg.set_metadata('protocol', 'receiveDeliveryFromCarrier')
 				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
 				print("Delivery ended, product delivered to destination!")

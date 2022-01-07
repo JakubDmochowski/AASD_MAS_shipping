@@ -16,12 +16,14 @@ class Client(agent.Agent):
 		self.add_behaviour(SendOrderRequest(self), orderRequest)
 
 		orderReadyToPickTemplate = Template()
-		orderReadyToPickTemplate.set_metadata("performative", "orderReadyToPick")
+		orderReadyToPickTemplate.set_metadata("performative", "inform")
+		orderReadyToPickTemplate.set_metadata("protocol", "orderReadyToPick")
 		self.add_behaviour(OrderReadyToPickInfo(self), orderReadyToPickTemplate)
 
 	def generateOrderRequest(self, to, order) -> Message:
 		OrderRequestMsg = Message(to=str(to), sender=str(self.jid))
-		OrderRequestMsg.set_metadata("performative", "orderRequest")
+		OrderRequestMsg.set_metadata("performative", "request")
+		OrderRequestMsg.set_metadata("protocol", "orderRequest")
 		OrderRequestMsg.body = (clientOrderRequest(order)).toJSON()
 		return OrderRequestMsg
 

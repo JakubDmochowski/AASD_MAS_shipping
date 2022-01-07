@@ -6,7 +6,6 @@ from agents.warehouse import WarehouseAgent
 from agents.Client import Client
 from agents.Shop import Shop
 
-
 dummy = DummyAgent("ss@localhost", "aa")
 warehouse = WarehouseAgent("receiver@localhost", "bb", capacity=15)
 x = warehouse.start()
@@ -28,7 +27,8 @@ client = Client("student1@01337.io", "student1",order, shop_name="student2@01337
 client_result = client.start()
 client_result.result()
 
-time.sleep(10)
+time.sleep(2)
+
 while warehouse.is_alive() or carrier.is_alive() or shop.is_alive() or client.is_alive():
     try:
          time.sleep(1)

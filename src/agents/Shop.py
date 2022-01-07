@@ -24,20 +24,23 @@ class Shop(agent.Agent):
         self.add_behaviour(sendInverntoryReport(self), shopInverntorytemplate)
 
         recvOrderRequestTemplate = Template()
-        recvOrderRequestTemplate.set_metadata("performative", "orderRequest")
+        recvOrderRequestTemplate.set_metadata("performative", "request")
+        recvOrderRequestTemplate.set_metadata("protocol", "orderRequest")
         self.add_behaviour(RecvOrderRequest(self), recvOrderRequestTemplate)
 
         recvDeliveryTemplate = Template()
-        recvDeliveryTemplate.set_metadata("performative", "receiveDeliveryFromCarrier")
+        recvDeliveryTemplate.set_metadata("performative", "request")
+        recvDeliveryTemplate.set_metadata("protocol", "receiveDeliveryFromCarrier")
         self.add_behaviour(RecvDelivery(self), recvDeliveryTemplate)
 
         giveDeliveryTemplate = Template()
-        giveDeliveryTemplate.set_metadata("performative", "giveDeliveryToCarrier")
+        giveDeliveryTemplate.set_metadata("performative", "confirm")
+        giveDeliveryTemplate.set_metadata("protocol", "giveDeliveryToCarrier")
         self.add_behaviour(GiveDelivery(self), giveDeliveryTemplate)
 
     def generateInventoryReport(self, to, order) -> Message:
         shopInventoryMsg = Message(to=str(to), sender=str(self.jid))
-        shopInventoryMsg.set_metadata("performative", "inventory")
+        shopInventoryMsg.set_metadata("performative", "inform")
         shopInventoryMsg.body = (shopInventoryReport(order)).toJSON()
         return shopInventoryMsg
 
@@ -49,13 +52,15 @@ class Shop(agent.Agent):
 
     def generateOrderReadToPickInfo(self, to) -> Message:
         shopInventoryMsg = Message(to=str(to), sender=str(self.jid))
-        shopInventoryMsg.set_metadata("performative", "orderReadyToPick")
+        shopInventoryMsg.set_metadata("performative", "inform")
+        shopInventoryMsg.set_metadata("protocol", "orderReadyToPick")
         shopInventoryMsg.body = "Order ready to pick"
         return shopInventoryMsg
 
     def generateOrderForCarrier(self, to, content) -> Message:
         OrderForCarrierMsg = Message(to=str(to), sender=str(self.jid))
-        OrderForCarrierMsg.set_metadata("performative", "orderFromShopToCarrier")
+        OrderForCarrierMsg.set_metadata("performative", "confirm")
+        OrderForCarrierMsg.set_metadata("protocol", "orderFromShopToCarrier")
         OrderForCarrierMsg.body = (CarrierDeliveryItems(content)).toJSON()
         return OrderForCarrierMsg
 

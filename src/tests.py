@@ -46,14 +46,14 @@ class DummyAgent(agent.Agent):
 
 class WarehouseTests(unittest.TestCase):
 
-	def testWHEN_AskedForStateReportWhileEmpty_THEN_ProducesReport(self):
+	def test_WHEN_AskedForStateReportWhileEmpty_THEN_ProducesReport(self):
 		warehouse = WarehouseAgent("receiver@localhost", "bb", capacity=15)
 		warehouse.start().result()
 		dummy = DummyAgent("a@localhost", "b", self)
 		
 		dummy.start().result()
 		while(dummy.is_alive()):
-			time.sleep(1)
+			time.sleep(0.1)
 		
 		pass
 

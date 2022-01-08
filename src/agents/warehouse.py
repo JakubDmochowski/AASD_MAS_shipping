@@ -47,6 +47,8 @@ class WarehouseReportRequestRecieverBehaviour(CyclicBehaviour):
 
 	async def run(self) -> None:
 		msg = await self.receive(timeout=100)
+		if not msg:
+			return
 		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
 		if 'performative' in msg.metadata:
 			if getPerformative(msg) == Performative.Query:
@@ -67,6 +69,8 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 
 	async def run(self) -> None:
 		msg = await self.receive(timeout=100)
+		if not msg:
+			return
 		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
 		
 		if msg.get_metadata('performative') == 'receiveDeliveryFromCarrier':
@@ -91,6 +95,8 @@ class WarehousePickupRecieverBehaviour(CyclicBehaviour):
 
 	async def run(self) -> None:
 		msg = await self.receive(timeout=100)
+		if not msg:
+			return
 		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
 		
 		if msg.get_metadata('performative') == 'giveDeliveryToCarrier':

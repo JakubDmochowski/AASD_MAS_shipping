@@ -18,11 +18,11 @@ class OrderManager(agent.Agent):
 	class TransportThread:
 		def __init__(self, offer: TransportOffer, id: str):
 			self.offer = offer
-			self.proposals = List[TransportProposal]()
+			self.proposals: List[TransportProposal] = list()
 			self.id = id
 			self.ended: bool = False
 			self.last_update: datetime = None
-			self.possible_suppliers = List[str]()
+			self.possible_suppliers: List[str] = list()
 
 	class RecvTransportRequest(CyclicBehaviour):
 		async def run(self) -> None:
@@ -119,14 +119,13 @@ class OrderManager(agent.Agent):
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				if msg['metadata']:
-					print(f"OrderManager transport proposal received: {msg.body}")
+				print(f"OrderManager transport proposal received: {msg.body}")
 
 
-	def __init__(self, jid: str, password: str, capacity: Integer):
+	def __init__(self, jid: str, password: str):
 		super().__init__(jid, password, verify_security=False)
-		self.transportThreads = List[OrderManager.TransportThread]()
-		self.carriers = List[str]()
+		self.transportThreads: List[OrderManager.TransportThread] = list()
+		self.carriers: List[OrderManager.TransportThread] = list()
 
 
 	async def setup(self) -> None:
@@ -146,7 +145,7 @@ class OrderManager(agent.Agent):
 
 		recvTransportProposalTemplate = Template()
 		setPerformative(recvTransportProposalTemplate, Performative.Propose)
-		self.add_behaviour(self.RecvTransportProposal(), recvTransportProposalTemplate)
+		self.add_behaviour(self.RecvTransportProposals(), recvTransportProposalTemplate)
 
 		self.add_behaviour(self.RecvTransportConfirmation())
 

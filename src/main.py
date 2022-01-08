@@ -9,8 +9,10 @@ from agents.Shop import Shop
 from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManager
 
+
 avalmanager = AvailabilityManagerAgent("aval_manager@localhost", "a")
 avalmanager.start().result()
+
 
 orderManager = OrderManager("student4@localhost", "a")
 orderManager.start().result()

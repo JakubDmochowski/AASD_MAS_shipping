@@ -1,5 +1,6 @@
 from agents.carrier import CarrierAgent
 from agents.dummy import DummyAgent
+from agents.producer import ProducerAgent
 from spade import quit_spade
 import time
 from agents.warehouse import WarehouseAgent
@@ -14,6 +15,10 @@ x.result()
 carrier = CarrierAgent("carrier@localhost", "tigase", load_capacity=50, availability=True)
 y = carrier.start()
 y.result()
+
+producer = ProducerAgent("producer@localhost", "tigase", capacity=15)
+producer_instance = producer.start()
+producer_instance.result()
 
 future = dummy.start()
 
@@ -38,6 +43,7 @@ while warehouse.is_alive() or carrier.is_alive() or shop.is_alive() or client.is
         dummy.stop()
         shop.stop()
         client.stop()
+        producer.stop()
         break
 quit_spade()
 

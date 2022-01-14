@@ -9,10 +9,12 @@ from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 from spade.template import Template
+from agents.orderManager import OrderManager
 
 from agents.warehouse import WarehouseAgent
 from common import Performative, setPerformative
 from messages.warehouseStateReport import WarehouseStateReport
+
 class DummyAgent(agent.Agent):
 	class InformBehav(OneShotBehaviour):
 		async def run(self) -> None:
@@ -56,6 +58,12 @@ class WarehouseTests(unittest.TestCase):
 			time.sleep(0.1)
 		
 		pass
+
+class OrderManagerTests(unittest.TestCase):
+	def test_WHEN_RequestedToTransport_SendsMessagesToCarriers(self):
+		orderManager = OrderManager("manager@localhost", "a")
+		orderManager.start().result()
+		
 
 if __name__ == '__main__':
 	unittest.main()

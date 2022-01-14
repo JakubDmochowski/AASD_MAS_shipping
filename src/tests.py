@@ -60,7 +60,7 @@ class WarehouseTests(unittest.TestCase):
 		pass
 
 class OrderManagerTests(unittest.TestCase):
-	def test_WHEN_RequestedToTransport_SendsMessagesToCarriers(self):
+	def test_WHEN_RequestedToTransport_THEN_SendsMessagesToCarriers(self):
 		orderManager = OrderManager("manager@localhost", "a")
 		orderManager.start().result()
 		

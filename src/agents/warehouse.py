@@ -10,10 +10,10 @@ from messages.warehouseStateReport import WarehouseStateReport
 
 class WarehouseAgent(agent.Agent):
 
-	def __init__(self, jid: str, password: str, capacity: Integer):
+	def __init__(self, jid: str, password: str, capacity: Integer, contents: Dict[str, Integer] = {}):
 		super().__init__(jid, password, verify_security=False)
 		self.capacity = capacity
-		self.contents: Dict[str, Integer] = dict()
+		self.contents = contents
 
 	async def setup(self) -> None:
 		print("Hello World! I'm agent {}".format(str(self.jid)))

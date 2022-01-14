@@ -3,6 +3,8 @@ from spade.message import Message
 from spade.template import Template
 from enum import Enum
 
+dumb_password = "a"
+
 class Performative(Enum):
 	AcceptProposal = 'accept-proposal'
 	Agree = 'agree'

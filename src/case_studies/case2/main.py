@@ -1,4 +1,3 @@
-from spade import quit_spade
 import time
 from spade.agent import Agent
 from typing import List

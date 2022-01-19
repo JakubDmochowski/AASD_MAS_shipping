@@ -10,7 +10,7 @@ class TransportProposal(JsonSerializable):
 
 	@classmethod
 	def fromMsg(self, msg):
-		msgBody = JSON.loads(msg.body)
+		msgBody = json.loads(msg.body)
 		off = TransportOffer()
 		off.fromJSON(msgBody['offer'])
 		self.offer = off

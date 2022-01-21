@@ -20,7 +20,7 @@ class ProducerAgent(agent.Agent):
             self.contents: Dict[str, Integer] = dict()
 
     async def setup(self) -> None:
-        print("Hello World! I'm agent {}".format(str(self.jid)))
+        print("ProducerAgent started {}".format(str(self.jid)))
         template = Template()
         template.set_metadata('performative', 'receiveProductDemand')
         self.add_behaviour(ProducerReceiverBehaviour(self), template)
@@ -48,10 +48,10 @@ class ProducerReceiverBehaviour(OneShotBehaviour):
     async def run(self) -> None:
         msg = await self.receive(timeout=100)
         if msg:
-            print('Producer recieved message {}, from {}'.format(msg.id, msg.sender))
+            print('Producer: message received {}, from {}'.format(msg.id, msg.sender))
             await self.send(self.generateProducerAvailabilityReportMessage(msg))
         else:
-            print("Agent {} Did not received any message".format(self.agent.jid))
+            print("Producer: Agent {} Did not received any message".format(self.agent.jid))
 
     def generateProducerAvailabilityReportMessage(self, msg: Message) -> Message:
         response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from messages.transportProposal import TransportProposal
 
-class OrderManager(agent.Agent):
+class OrderManagerAgent(agent.Agent):
 
 	class TransportThread:
 		def __init__(self, offer: TransportOffer, id: str):
@@ -34,9 +34,9 @@ class OrderManager(agent.Agent):
 				newThread = OrderManager.TransportThread(offer = ag.getTransportOffer(msg), id=msg.thread)
 				ag.transportThreads.append(newThread)
 				self.send(self.agent.generateStateReportRequest())
-				print(f"OrderManager requests state report from {ag.availabilityManager}")
+				print(f"OrderManager: requests state report from {ag.availabilityManager}")
 			else:
-				print("Did not received any transport offers for 100 seconds")
+				print("OrderManager: Did not received any transport offers for 100 seconds")
 
 	class RecvTransportOffer(CyclicBehaviour):
 		async def run(self) -> None:
@@ -48,7 +48,7 @@ class OrderManager(agent.Agent):
 				newThread = OrderManager.TransportThread(offer = msg, id=msg.thread)
 				ag.transportThreads.append(newThread)
 				self.send(ag.generateStateReportRequest())
-				print(f"OrderManager requests state report from {ag.availabilityManager}")
+				print(f"OrderManager: requests state report from {ag.availabilityManager}")
 			else:
 				print("Did not received any transport offers for 100 seconds")
 
@@ -65,8 +65,8 @@ class OrderManager(agent.Agent):
 			ag: OrderManager = self.agent
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print(f"OrderManager state report received: {msg.body}")
-				print("OrderManager broadcasting transport offers.")
+				print(f"OrderManager: state report received: {msg.body}")
+				print("OrderManager: broadcasting transport offers.")
 				for thread in ag.transportThreads:
 					if len(thread.proposals) < 1:
 						thread.possible_suppliers = ag.getPossibleSuppliers(msg)
@@ -80,7 +80,7 @@ class OrderManager(agent.Agent):
 				startAt = datetime.now() + timedelta(seconds=100)
 				self.agent.add_behaviour(OrderManager.TryEndAuction(start_at=startAt))
 			else:
-				print("Did not received any transport offers for 100 seconds")
+				print("OrderManager: Did not received any transport offers for 100 seconds")
 
 
 	class RecvTransportProposals(CyclicBehaviour):
@@ -96,7 +96,7 @@ class OrderManager(agent.Agent):
 						thread.proposals.append(proposal)
 						thread.last_update = datetime.now()
 					# thread.proposals.sort(desc=true)
-				print(f"OrderManager transport proposal received: {msg.body}")
+				print(f"OrderManager: transport proposal received: {msg.body}")
 
 	class ResolveAuctionBehaviour(PeriodicBehaviour):
 		async def run(self) -> None:
@@ -119,7 +119,7 @@ class OrderManager(agent.Agent):
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print(f"OrderManager transport proposal received: {msg.body}")
+				print(f"OrderManager: transport proposal received: {msg.body}")
 
 
 	def __init__(self, jid: str, password: str):
@@ -129,7 +129,7 @@ class OrderManager(agent.Agent):
 
 
 	async def setup(self) -> None:
-		print("Initialized OrderManager agent {}".format(str(self.jid)))
+		print("OrderManagerAgent started: {}".format(str(self.jid)))
 		
 		recvStateReportTemplate = Template()
 		setPerformative(recvStateReportTemplate, Performative.Inform)

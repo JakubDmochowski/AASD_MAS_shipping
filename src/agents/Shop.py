@@ -10,7 +10,7 @@ from common import Performative
 import json
 
 
-class Shop(agent.Agent):
+class ShopAgent(agent.Agent):
     def __init__(self, jid: str, password: str, content, availabilityManJiD, orderManJiD):
         super().__init__(jid, password, verify_security=False)
         self.content = content
@@ -19,7 +19,7 @@ class Shop(agent.Agent):
         self.clients_orders = {}
 
     async def setup(self):
-        print("Hello World! I'm shop {}".format(str(self.jid)))
+        print("ShopAgent started: {}".format(str(self.jid)))
         shopInverntorytemplate = Template()
         self.add_behaviour(sendInverntoryReport(self), shopInverntorytemplate)
 
@@ -85,26 +85,26 @@ class Shop(agent.Agent):
 
 
 class sendInverntoryReport(OneShotBehaviour):
-    def __init__(self, parent: Shop):
+    def __init__(self, parent: ShopAgent):
         super().__init__()
         self._parent = parent
 
     async def run(self):
-        print("Sending inventory")
+        print("Shop: Sending inventory")
         await self.send(
             self._parent.generateInventoryReport(to=self._parent.availabilityManJiD, order=self._parent.content))
-        print("inventory sent!")
+        print("Shop: inventory sent!")
 
 
 class GiveDelivery(CyclicBehaviour):
-    def __init__(self, parent: Shop):
+    def __init__(self, parent: ShopAgent):
         super().__init__()
         self._parent = parent
 
     async def run(self):
         msg = await self.receive(timeout=1)
         if msg:
-            print("Shop is giving delivery to " + str(msg.sender))
+            print("Shop: giving delivery to " + str(msg.sender))
             carrierDelivery = self._parent.getDeliveryItems(msg)
             deliveryToGive = {}
             for product_to_give in carrierDelivery.content:
@@ -127,7 +127,7 @@ class GiveDelivery(CyclicBehaviour):
 
 
 class RecvDelivery(CyclicBehaviour):
-    def __init__(self, parent: Shop):
+    def __init__(self, parent: ShopAgent):
         super().__init__()
         self._parent = parent
 
@@ -179,7 +179,7 @@ class RecvDelivery(CyclicBehaviour):
 
 
 class RecvOrderRequest(CyclicBehaviour):
-    def __init__(self, parent: Shop):
+    def __init__(self, parent: ShopAgent):
         super().__init__()
         self._parent = parent
 

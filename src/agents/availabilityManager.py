@@ -16,7 +16,7 @@ class AvailabilityManagerAgent(agent.Agent):
 		self.contents: Dict[str, Dict[str, Integer]] = dict()
 
 	async def setup(self) -> None:
-		print("Hello World! I'm agent {}".format(str(self.jid)))
+		print("AvailabilityManagerAgent started: {}".format(str(self.jid)))
 		template = Template()
 		setPerformative(template, Performative.Query)
 		self.add_behaviour(AvailabilityManagerReportRequestReceiverBehaviour(self), template)
@@ -33,12 +33,12 @@ class AvailabilityManagerReportRequestReceiverBehaviour(CyclicBehaviour):
 
 	async def run(self) -> None:
 		msg = await self.receive(timeout=100)
-		print('AvailabilityManager received message {}, from {}'.format(msg.id, msg.sender))
+		print('AvailabilityManager: received message {}, from {}'.format(msg.id, msg.sender))
 		if 'performative' in msg.metadata:
 			if getPerformative(msg) == Performative.Query:
 				await self.send(self.prepareAvailabilityManagerReportMessage(msg))
 		else:
-			print("Agent {} Error: no performative in message".format(self.agent.jid))
+			print("AvailabilityManager {} Error: no performative in message".format(self.agent.jid))
 
 	def prepareAvailabilityManagerReportMessage(self, msg: Message) -> Message:
 		response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)

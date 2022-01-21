@@ -17,55 +17,55 @@ from messages.transportProposal import TransportProposal
 class CarrierAgent(agent.Agent):
 	class RecvDetailsRequestBehav(CyclicBehaviour):
 		async def run(self):
-			print("RecvDetailsRequestBehav running")
+			print("Carrier: RecvDetailsRequestBehav running")
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Carrier details request received with content: {}".format(msg.body))
+				print("Carrier: Carrier details request received with content: {}".format(msg.body))
 				out = self.agent.generateCarrierDetailsReport(msg)
 				await self.send(out)
-				print("Send carrier details with content: {}".format(out.body))
+				print("Carrier: Send carrier details with content: {}".format(out.body))
 			else:
-				print("Did not received any carrier details request after 100 seconds")
+				print("Carrier: Did not received any carrier details request after 100 seconds")
 	
 	class RecvTranspOfferGenerateProposalBehav(CyclicBehaviour):
 		async def run(self):
-			print("RecvTranspOfferGenerateProposalBehav running")
+			print("Carrier: RecvTranspOfferGenerateProposalBehav running")
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Transport offer received with content: {}".format(msg.body))
+				print("Carrier: Transport offer received with content: {}".format(msg.body))
 				if msg.body is not None:
 					out = self.agent.generateTransportProposal(msg)
 					await self.send(out)
-					print("Send proposal with content: {}".format(out.body))
+					print("Carrier: Send proposal with content: {}".format(out.body))
 			else:
-				print("Did not received any transport offer after 100 seconds")
+				print("Carrier: Did not received any transport offer after 100 seconds")
 
 	class RecvTranspContractGenerateConfirmBehav(CyclicBehaviour):
 		async def run(self):
-			print("RecvTranspContractGenerateConfirmBehav running")
+			print("Carrier: RecvTranspContractGenerateConfirmBehav running")
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Transport contract received with content: {}".format(msg.body))
+				print("Carrier: Transport contract received with content: {}".format(msg.body))
 				out = self.agent.generateTransportConfirmation(msg)
 				await self.send(out)
-				print("Send contract confirmation with content: {}".format(out.body))
+				print("Carrier: Send contract confirmation with content: {}".format(out.body))
 				self.agent.add_behaviour(self.agent.ReceiveProductBehav())
 			else:
-				print("Did not received any transport contract after 100 seconds")
+				print("Carrier: Did not received any transport contract after 100 seconds")
 
 	class RecvTranspOfferResolved(CyclicBehaviour):
 		async def run(self):
-			print("RecvTranspContractGenerateConfirmBehav running")
+			print("Carrier: RecvTranspContractGenerateConfirmBehav running")
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
-				print("Transport offer resolved msg received with content: {}".format(msg.body))
+				print("Carrier: Transport offer resolved msg received with content: {}".format(msg.body))
 				await self.send(self.agent.generateACK(msg))
 			else:
-				print("Did not received transport offer resolved after 100 seconds")
+				print("Carrier: Did not received transport offer resolved after 100 seconds")
 	
 	class DeliveryConfirmationBehav(OneShotBehaviour):
 		async def run(self):
@@ -74,12 +74,12 @@ class CarrierAgent(agent.Agent):
 				msg.set_metadata('performative', 'info')
 				msg.body = (DeliveryConfirmation(True, proposal)).toJSON()
 				await self.send(msg)
-				print("Product delivered from {} to {}".format(proposal.offer.src, proposal.offer.dst))
+				print("Carrier: Product delivered from {} to {}".format(proposal.offer.src, proposal.offer.dst))
 				del self.agent.handledOffers[manager]
 
 	class ReceiveProductBehav(OneShotBehaviour):
 		async def run(self):
-			print("ReceiveProductBehav running")
+			print("Carrier: ReceiveProductBehav running")
 
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.src)
@@ -90,15 +90,15 @@ class CarrierAgent(agent.Agent):
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 				if msg and msg["protocol"] == "orderFromShopToCarrier":
-					print("Delivery started, product taken from source!: {}".format(msg.body))
+					print("Carrier: Delivery started, product taken from source!: {}".format(msg.body))
 					self.agent.add_behaviour(self.agent.DeliverProductBehav())
 				else:
-					print("Did not received delivery products")
+					print("Carrier: Did not received delivery products")
 
 	
 	class DeliverProductBehav(OneShotBehaviour):
 		async def run(self):
-			print("DeliverProductBehav running")
+			print("Carrier: DeliverProductBehav running")
 
 			for _, proposal in self.agent.handledOffers.items():
 				msg = Message(to=proposal.offer.dst)
@@ -109,10 +109,10 @@ class CarrierAgent(agent.Agent):
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 				if msg and msg["protocol"] == "receiveDeliveryFromCarrier":
-					print("Delivery ended, product delivered to destination!; {}".format(msg.body))
+					print("Carrier: Delivery ended, product delivered to destination!; {}".format(msg.body))
 					self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())
 				else:
-					print("Did not received delivery products")
+					print("Carrier: Did not received delivery products")
 
 	def __init__(self, jid: str, password: str, load_capacity: Integer, availability: bool):
 		super().__init__(jid, password, verify_security=False)
@@ -122,7 +122,7 @@ class CarrierAgent(agent.Agent):
 		self.delivery_count = 0
 	
 	async def setup(self):
-		print("CarrierAgent started")
+		print("CarrierAgent started: {}".format(str(self.jid)))
 		carrier_details_request = Template()
 		carrier_details_request.set_metadata("performative", "query")
 		self.add_behaviour(self.RecvDetailsRequestBehav(), carrier_details_request)

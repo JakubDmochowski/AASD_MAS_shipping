@@ -4,14 +4,14 @@ from spade.message import Message
 from messages.clientOrderRequest import clientOrderRequest
 from spade.template import Template
 
-class Client(agent.Agent):
+class ClientAgent(agent.Agent):
 	def __init__(self, jid: str, password: str,  order, shop_name):
 		super().__init__(jid, password, verify_security=False)
 		self.order = order
 		self.shop_name = shop_name
 
 	async def setup(self):
-		print("Hello World! I'm customer {}".format(str(self.jid)))
+		print("ClientAgent started: {}".format(str(self.jid)))
 		orderRequest = Template()
 		self.add_behaviour(SendOrderRequest(self), orderRequest)
 
@@ -28,16 +28,16 @@ class Client(agent.Agent):
 		return OrderRequestMsg
 
 class SendOrderRequest(OneShotBehaviour):
-	def __init__(self, parent: Client):
+	def __init__(self, parent: ClientAgent):
 		super().__init__()
 		self._parent = parent
 	async def run(self):
-		print("Sending order to shop:"+str(self._parent.shop_name))
+		print("Client: Sending order to shop:"+str(self._parent.shop_name))
 		await self.send(self._parent.generateOrderRequest(to=self._parent.shop_name,order=self._parent.order))
-		print("Order sent!")
+		print("Client: Order sent!")
 
 class OrderReadyToPickInfo(CyclicBehaviour):
-	def __init__(self, parent: Client):
+	def __init__(self, parent: ClientAgent):
 		super().__init__()
 		self._parent = parent
 	async def run(self):

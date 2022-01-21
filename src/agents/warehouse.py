@@ -16,7 +16,7 @@ class WarehouseAgent(agent.Agent):
 		self.contents = contents
 
 	async def setup(self) -> None:
-		print("Hello World! I'm agent {}".format(str(self.jid)))
+		print("WerehouseAgent started: {}".format(str(self.jid)))
 		template = Template()
 		setPerformative(template, Performative.Query)
 		self.add_behaviour(WarehouseReportRequestRecieverBehaviour(self), template)
@@ -49,12 +49,12 @@ class WarehouseReportRequestRecieverBehaviour(CyclicBehaviour):
 		msg = await self.receive(timeout=100)
 		if not msg:
 			return
-		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
+		print('Warehouse: recieved message {}, from {}'.format(msg.id, msg.sender))
 		if 'performative' in msg.metadata:
 			if getPerformative(msg) == Performative.Query:
 				await self.send(self.prepareWarehouseReportMessage(msg))
 		else:
-			print("Agent {} Error: no performative in message".format(self.agent.jid))
+			print("Warehouse {} Error: no performative in message".format(self.agent.jid))
 
 	def prepareWarehouseReportMessage(self, msg: Message) -> Message:
 		response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)
@@ -71,7 +71,7 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 		msg = await self.receive(timeout=100)
 		if not msg:
 			return
-		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
+		print('Warehouse: recieved message {}, from {}'.format(msg.id, msg.sender))
 		
 		if msg.get_metadata('performative') == 'receiveDeliveryFromCarrier':
 			items = CarrierDeliveryItems({})
@@ -97,7 +97,7 @@ class WarehousePickupRecieverBehaviour(CyclicBehaviour):
 		msg = await self.receive(timeout=100)
 		if not msg:
 			return
-		print('Warehouse recieved message {}, from {}'.format(msg.id, msg.sender))
+		print('Warehouse: recieved message {}, from {}'.format(msg.id, msg.sender))
 		
 		if msg.get_metadata('performative') == 'giveDeliveryToCarrier':
 			items = CarrierDeliveryItems({})

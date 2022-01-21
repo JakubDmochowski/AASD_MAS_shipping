@@ -4,5 +4,6 @@ from aioxmpp.xso.types import Integer
 
 
 class productAvailabilityReport(JsonSerializable):
-    def __init__(self, contents: Dict[str, Integer]) -> None:
+    def __init__(self, capacity: Integer, contents: Dict[str, Integer]) -> None:
+        self.capacity = capacity
         self.contents = contents

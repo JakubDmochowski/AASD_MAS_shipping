@@ -10,10 +10,14 @@ from messages.productAvailabilityReport import productAvailabilityReport
 
 class ProducerAgent(agent.Agent):
 
-    def __init__(self, jid: str, password: str, capacity: Integer):
+    def __init__(self, jid: str, password: str, capacity: Integer, contents: Dict[str, Integer], availabilityManJiD):
         super().__init__(jid, password, verify_security=False)
         self.capacity = capacity
-        self.contents: Dict[str, Integer] = dict()
+        self.availabilityManJiD = availabilityManJiD
+        if contents:
+            self.contents = contents
+        else:
+            self.contents: Dict[str, Integer] = dict()
 
     async def setup(self) -> None:
         print("Hello World! I'm agent {}".format(str(self.jid)))
@@ -21,6 +25,20 @@ class ProducerAgent(agent.Agent):
         template.set_metadata('performative', 'receiveProductDemand')
         self.add_behaviour(ProducerReceiverBehaviour(self), template)
 
+        self.add_behaviour(ProducerInitialStateReportBehaviour(self))
+
+class ProducerInitialStateReportBehaviour(OneShotBehaviour):
+    def __init__(self, parent: ProducerAgent):
+        super().__init__()
+        self._parent = parent
+
+    async def run(self) -> None:
+        self.generateProducerAvailabilityReportInitialState()
+
+    def generateProducerAvailabilityReportInitialState(self) -> Message:
+        report = Message(to=self._parent.availabilityManJiD, sender=str(self.agent.jid))
+        setPerformative(report, Performative.Inform)
+        report.body = (productAvailabilityReport(self._parent.capacity, self._parent.contents))
 
 class ProducerReceiverBehaviour(OneShotBehaviour):
     def __init__(self, parent: ProducerAgent):
@@ -38,5 +56,5 @@ class ProducerReceiverBehaviour(OneShotBehaviour):
     def generateProducerAvailabilityReportMessage(self, msg: Message) -> Message:
         response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)
         setPerformative(response, Performative.Inform)
-        response.body = (productAvailabilityReport(self._parent.contents)).toJSON()
+        response.body = (productAvailabilityReport(self._parent.capacity, self._parent.contents)).toJSON()
         return response

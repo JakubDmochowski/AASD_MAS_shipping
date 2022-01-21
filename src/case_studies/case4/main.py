@@ -1,4 +1,3 @@
-from spade import quit_spade
 import time
 from spade.agent import Agent
 from typing import List
@@ -25,6 +24,6 @@ def case4():
 	agents = prepareAgents()
 	for agent in agents:
 		agent.start().result()
-	time.sleep(5)
+	time.sleep(15)
 	for agent in agents:
 		agent.stop().result()

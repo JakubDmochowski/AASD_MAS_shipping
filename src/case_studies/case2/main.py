@@ -1,12 +1,12 @@
 import time
 from spade.agent import Agent
 from typing import List
+from common import dumb_password
 from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManagerAgent
 from agents.carrier import CarrierAgent
 from agents.producer import ProducerAgent
 from agents.warehouse import WarehouseAgent
-from common import dumb_password
 
 def prepareAgents() -> List[Agent]:
 	return [
@@ -16,8 +16,6 @@ def prepareAgents() -> List[Agent]:
 		OrderManagerAgent("order@localhost", dumb_password),
 		ProducerAgent("producer@localhost", dumb_password, 15, {}, "availability@localhost")
 	]
-
-
 
 def case2():
 	agents = prepareAgents()

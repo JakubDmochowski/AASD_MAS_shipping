@@ -1,4 +1,6 @@
 from spade import agent
+from aioxmpp.xso.types import Integer
+from typing import Dict
 from spade.template import Template
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
@@ -11,8 +13,9 @@ import json
 
 
 class ShopAgent(agent.Agent):
-    def __init__(self, jid: str, password: str, content, availabilityManJiD, orderManJiD):
+    def __init__(self, jid: str, password: str, capacity: Integer, content: Dict[str, Integer], availabilityManJiD, orderManJiD):
         super().__init__(jid, password, verify_security=False)
+        self.capacity = capacity
         self.content = content
         self.availabilityManJiD = availabilityManJiD
         self.orderManJiD = orderManJiD

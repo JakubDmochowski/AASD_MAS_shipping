@@ -17,10 +17,10 @@ def prepareAgents() -> List[Agent]:
 	client1 = Client("client1@localhost", dumb_password,order, shop_name="student2@localhost" )
 	client2 = Client("client1@localhost", dumb_password,order, shop_name="student2@localhost" )
 	return [
+		CarrierAgent("carrier1@localhost", dumb_password, 10, True),
 		WarehouseAgent("warehouse@localhost", dumb_password, 10, {"orange", 20}),
 		AvailabilityManagerAgent("availability@localhost", dumb_password),
 		OrderManager("order@localhost", dumb_password),
-		CarrierAgent("carrier1@localhost", dumb_password, 10, True),
 		shop1,
 		shop2,
 		client1,
@@ -33,6 +33,6 @@ def case1():
 	agents = prepareAgents()
 	for agent in agents:
 		agent.start().result()
-	time.sleep(5)
+	time.sleep(15)
 	for agent in agents:
 		agent.stop().result()

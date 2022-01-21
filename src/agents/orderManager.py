@@ -101,7 +101,7 @@ class OrderManager(agent.Agent):
 	class ResolveAuctionBehaviour(PeriodicBehaviour):
 		async def run(self) -> None:
 			ag: OrderManager = self.agent
-			print("OrderManager: Waiting for transportProposals")
+			print("OrderManager: resolve auction")
 			threads : List[OrderManager.TransportThread] = ag.transportThreads
 			for thread in threads:
 				if thread.ended:

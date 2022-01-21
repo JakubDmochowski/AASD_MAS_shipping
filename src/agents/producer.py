@@ -38,7 +38,7 @@ class ProducerInitialStateReportBehaviour(OneShotBehaviour):
     def generateProducerAvailabilityReportInitialState(self) -> Message:
         report = Message(to=self._parent.availabilityManJiD, sender=str(self.agent.jid))
         setPerformative(report, Performative.Inform)
-        report.body = (productAvailabilityReport(self._parent.capacity, self._parent.contents))
+        report.body = (productAvailabilityReport(self._parent.capacity, self._parent.contents)).toJSON()
 
 class ProducerReceiverBehaviour(OneShotBehaviour):
     def __init__(self, parent: ProducerAgent):

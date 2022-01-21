@@ -16,8 +16,8 @@ def prepareAgents() -> List[Agent]:
 		WarehouseAgent("warehouse@localhost", dumb_password, 10, {"orange", 20}),
 		AvailabilityManagerAgent("availability@localhost", dumb_password),
 		OrderManagerAgent("order@localhost", dumb_password),
-		ShopAgent("shop1@localhost", dumb_password, {}, "availability@localhost", "order@localhost"),
-		ShopAgent("shop2@localhost", dumb_password, {}, "availability@localhost", "order@localhost"),
+		ShopAgent("shop1@localhost", dumb_password, 50, {}, "availability@localhost", "order@localhost"),
+		ShopAgent("shop2@localhost", dumb_password, 50, {}, "availability@localhost", "order@localhost"),
 		ClientAgent("client1@localhost", dumb_password,order={"orange": 10}, shop_name="student2@localhost" ),
 		ClientAgent("client2@localhost", dumb_password,order={"orange": 10}, shop_name="student2@localhost" )
 	]

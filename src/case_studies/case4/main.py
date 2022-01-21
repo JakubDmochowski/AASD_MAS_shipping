@@ -18,7 +18,7 @@ def prepareAgents() -> List[Agent]:
 		OrderManagerAgent("order@localhost", dumb_password),
 		CarrierAgent("carrier@localhost", dumb_password, 40, True),
     ShopAgent("shop@localhost", dumb_password, 100, {"orange": 50}, "availability@localhost", "order@localhost"),
-		ProducerAgent("producer@localhost", dumb_password, 40, {"apple": 40}),
+		ProducerAgent("producer@localhost", dumb_password, 40, {"apple": 40}, "availability@localhost"),
 	]
 
 def case4():

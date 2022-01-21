@@ -5,8 +5,8 @@ from typing import List
 from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManager
 from agents.carrier import CarrierAgent
-from agents.Shop import Shop
-from agents.Client import Client
+from agents.shop import Shop
+from agents.client import Client
 from agents.warehouse import WarehouseAgent
 from common import dumb_password
 

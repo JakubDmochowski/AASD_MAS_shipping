@@ -148,7 +148,7 @@ class OrderManagerAgent(agent.Agent):
 		self.add_behaviour(self.RecvTransportProposals(), recvTransportProposalTemplate)
 
 		transportConfirmationTemplate = Template()
-		transportConfirmationTemplate.set_metadata("performative", "confirm")
+		setPerformative(transportConfirmationTemplate, Performative.Confirm)
 		self.add_behaviour(self.RecvTransportConfirmation(), transportConfirmationTemplate)
 
 		self.add_behaviour(self.ResolveAuctionBehaviour(period=3))

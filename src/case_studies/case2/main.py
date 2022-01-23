@@ -11,10 +11,12 @@ from agents.warehouse import WarehouseAgent
 def prepareAgents() -> List[Agent]:
 	return [
 		CarrierAgent("carrier1@localhost", dumb_password, 10, True),
-		WarehouseAgent("warehouse@localhost", dumb_password, 10, {"orange", 20}),
-		AvailabilityManagerAgent("availability@localhost", dumb_password),
 		OrderManagerAgent("order@localhost", dumb_password),
-		ProducerAgent("producer@localhost", dumb_password, 15, {}, "availability@localhost")
+		AvailabilityManagerAgent("availability@localhost", dumb_password, "producer", "warehouse", "order@localhost",
+								 ["shop1", "shop2"]),
+		WarehouseAgent("warehouse@localhost", dumb_password, 10, "availability@localhost", {"orange": 20}),
+
+		ProducerAgent("producer@localhost", dumb_password, 15, "availability@localhost")
 	]
 
 def case2():

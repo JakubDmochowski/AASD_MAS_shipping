@@ -7,6 +7,7 @@ from spade.behaviour import OneShotBehaviour
 from spade.behaviour import PeriodicBehaviour
 from common import Performative, getPerformative, setPerformative
 from messages.productAvailabilityReport import productAvailabilityReport
+from agents.warehouse import WarehousePickupRecieverBehaviour
 
 
 class ProducerAgent(agent.Agent):
@@ -24,6 +25,9 @@ class ProducerAgent(agent.Agent):
         self.add_behaviour(ProducerReceiverBehaviour(self), template)
         self.add_behaviour(ProducerCyclicProductionBehaviour(self, period=0.5))
         self.add_behaviour(ProducerInitialStateReportBehaviour(self))
+        transportRecvTemplate = Template()
+        transportRecvTemplate.set_metadata('performative', 'receiveDeliveryFromCarrier')
+        self.add_behaviour(WarehousePickupRecieverBehaviour(self), transportRecvTemplate)
 
 
 class ProducerInitialStateReportBehaviour(OneShotBehaviour):

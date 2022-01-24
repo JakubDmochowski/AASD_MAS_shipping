@@ -6,14 +6,13 @@ from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManagerAgent
 from agents.carrier import CarrierAgent
 from agents.Shop import ShopAgent
-from agents.Client import ClientAgent
 from agents.warehouse import WarehouseAgent
 from common import dumb_password
 
 def prepareAgents() -> List[Agent]:
 	return [
-		AvailabilityManagerAgent("availability@localhost", dumb_password, "producer", "warehouse", "order@localhost",
-								 ["shop1", "shop2"]),
+		AvailabilityManagerAgent("availability@localhost", dumb_password, "producer@localhost", "warehouse@localhost",
+								 "order@localhost"),
 		OrderManagerAgent("order@localhost", dumb_password),
     	WarehouseAgent("warehouse@localhost", dumb_password, 500, "availability@localhost",
 					   {"orange": 200, "apple": 100, "banana": 100, "grapefruit": 100}),

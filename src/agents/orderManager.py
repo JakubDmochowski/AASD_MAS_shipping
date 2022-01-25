@@ -82,7 +82,6 @@ class OrderManagerAgent(agent.Agent):
 						for supplier in thread.possible_suppliers:
 							offer = deepcopy(thread.offer)
 							offer.src = supplier
-							print(ag.carriers)
 							for carrier in ag.carriers:
 								print(f"OrderManager: sending transport offer to {carrier}")
 								await self.send(ag.generateTransportOffer(to=carrier, offer=offer, threadid=thread.id))
@@ -135,6 +134,10 @@ class OrderManagerAgent(agent.Agent):
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
 				print(f"OrderManager: transport confirmation received: {msg.body}")
+				transportThread = next((thread for thread in self.agent.transportThreads if thread.id == msg.thread), None)
+				if transportThread:
+					print(f"OrderManager: transport thread {msg.thread} resolved")
+					self.agent.transportThreads.remove(transportThread)
 
 	def __init__(self, jid: str, password: str, availabilityManagerJID, carriers: List[TransportThread] = list()):
 		super().__init__(jid, password, verify_security=False)

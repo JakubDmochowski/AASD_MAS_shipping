@@ -58,7 +58,7 @@ class CarrierAgent(agent.Agent):
 
 	class RecvTranspOfferResolved(CyclicBehaviour):
 		async def run(self):
-			print("Carrier: RecvTranspContractGenerateConfirmBehav running")
+			print("Carrier: RecvTranspOfferResolved running")
 
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			if msg:
@@ -155,8 +155,8 @@ class CarrierAgent(agent.Agent):
 		return reportMsg
 
 	def generateTransportConfirmation(self, msg: Message) -> Message:
-		confirmMsg = Message(to=str(msg.sender), sender=str(self.jid))
-		confirmMsg.set_metadata("performative", "confirm")
+		confirmMsg = msg.make_reply()
+		setPerformative(confirmMsg, Performative.Confirm)
 		contract = TransportConfirmationRequest()
 		contract.fromJSON(msg.body)
 		confirmMsg.body = (TransportContractConfirmation(contract.proposal)).toJSON()

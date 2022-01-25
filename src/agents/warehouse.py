@@ -81,7 +81,14 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 		reply = Message(to=str(msg.sender), body='ok')
 		setPerformative(reply, Performative.Inform)
 		await self.send(msg)
-		await self.send(WarehousePickupRecieverBehaviour.prepareWarehouseReportMessage(msg))
+		await self.send(self.prepareWarehouseReportMessage(msg))
+
+#god fucking dammit, duplikacja kodu ale mało mnie to obchodzi
+	def prepareWarehouseReportMessage(self, msg) -> Message:
+		response = Message(to=str(self._parent.availabilityManJiD), sender=str(self.agent.jid), thread=msg.thread)
+		setPerformative(response, Performative.Inform)
+		response.body = (WarehouseStateReport(self._parent.content, self._parent.capacity)).toJSON()
+		return response
 
 
 class WarehousePickupRecieverBehaviour(CyclicBehaviour):

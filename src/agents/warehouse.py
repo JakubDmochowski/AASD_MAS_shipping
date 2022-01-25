@@ -80,7 +80,7 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 		self._parent.addItems(items.content)
 		reply = Message(to=str(msg.sender), body='ok')
 		setPerformative(reply, Performative.Inform)
-		await self.send(msg)
+		await self.send(reply)
 		await self.send(self.prepareWarehouseReportMessage(msg))
 
 #god fucking dammit, duplikacja kodu ale mało mnie to obchodzi

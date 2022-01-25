@@ -36,6 +36,7 @@ class OrderManagerAgent(agent.Agent):
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			# TODO: check if that particular message is transportRequest
 			if msg:
+				print(f"OrderManager: received transport request from {msg.sender}, body {msg.body}")
 				threadId = msg.thread if msg.thread != None else str(uuid.uuid4())
 				newThread = OrderManagerAgent.TransportThread(offer = ag.getTransportOffer(msg), id=threadId)
 				ag.transportThreads.append(newThread)
@@ -51,9 +52,11 @@ class OrderManagerAgent(agent.Agent):
 			msg = await self.receive(timeout=100) # wait for a message for 100 seconds
 			# TODO: check if that particular message is transportRequest
 			if msg:
-				newThread = OrderManagerAgent.TransportThread(offer = msg, id=msg.thread)
+				print(f"OrderManager: received transport offer from {msg.sender}, body {msg.body}")
+				threadId = msg.thread if msg.thread != None else str(uuid.uuid4())
+				newThread = OrderManagerAgent.TransportThread(offer = ag.getTransportOffer(msg), id=threadId)
 				ag.transportThreads.append(newThread)
-				await self.send(ag.generateStateReportRequest(msg.thread))
+				await self.send(ag.generateStateReportRequest(threadId))
 				print(f"OrderManager: requests state report from {ag.availabilityManagerJID}")
 			else:
 				print("Did not received any transport offers for 100 seconds")
@@ -76,14 +79,14 @@ class OrderManagerAgent(agent.Agent):
 				print("OrderManager: starting auction")
 				for thread in ag.transportThreads:
 					if len(thread.proposals) < 1:
-						thread.possible_suppliers = ag.getPossibleSuppliers(msg)
+						thread.possible_suppliers = ag.getPossibleSuppliers(msg, thread.offer)
 						print("OrderManager: broadcasting transport offers.")
 						thread.last_update = datetime.now()
 						for supplier in thread.possible_suppliers:
 							offer = deepcopy(thread.offer)
 							offer.src = supplier
 							for carrier in ag.carriers:
-								print(f"OrderManager: sending transport offer to {carrier}")
+								print(f"OrderManager: sending transport offer for thread {thread.id} from {supplier} to {carrier}")
 								await self.send(ag.generateTransportOffer(to=carrier, offer=offer, threadid=thread.id))
 				startAt = datetime.now() + timedelta(seconds=2)
 				print(f"OrderManager: ending auction at {startAt}")
@@ -192,15 +195,15 @@ class OrderManagerAgent(agent.Agent):
 		setPerformative(msg, Performative.CFP)
 		return msg
 
-	def getPossibleSuppliers(self, msg: Message) -> List[str]:
-		msgBody = json.loads(msg.body)
-		if "src" in msgBody.keys():
-			return list(msgBody.src)
+	def getPossibleSuppliers(self, msg: Message, offer: TransportOffer) -> List[str]:
+		if offer.src:
+			return list(offer.src)
 		else:
-			# return list(location in msgBody['locations'] if is_close(location, offer.dst))
+			msgBody = json.loads(msg.body)
 			transportThread = next((thread for thread in self.transportThreads if thread.id == msg.thread), None)
 			requestSrc = transportThread.offer.dst
 			return [location for location in msgBody['state'].keys() if location != requestSrc]
+			# return list(location in msgBody['locations'] if is_close(location, offer.dst))
 
 	def pickBestProposal(self, proposals: List[CarrierTransportProposal]) -> Tuple[List[CarrierTransportProposal], CarrierTransportProposal]:
 		winner: CarrierTransportProposal = None

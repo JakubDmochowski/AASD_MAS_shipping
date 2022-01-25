@@ -5,7 +5,7 @@ from common import dumb_password
 from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManagerAgent
 from agents.carrier import CarrierAgent
-from agents.shop import ShopAgent
+from agents.Shop import ShopAgent
 from agents.client import ClientAgent
 from agents.warehouse import WarehouseAgent
 

@@ -82,10 +82,10 @@ class CarrierAgent(agent.Agent):
 			print("Carrier: ReceiveProductBehav running")
 
 			for _, proposal in self.agent.handledOffers.items():
-				msg = Message(to=proposal.offer.src)
+				msg = Message(to=proposal['offer']['src'])
 				msg.set_metadata('performative', 'confirm')
 				msg.set_metadata('protocol', 'giveDeliveryToCarrier')
-				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
+				msg.body = (CarrierDeliveryItems(proposal['offer']['contents'])).toJSON()
 				await self.send(msg)
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
@@ -116,7 +116,7 @@ class CarrierAgent(agent.Agent):
 
 	def __init__(self, jid: str, password: str, load_capacity: Integer, availability: bool):
 		super().__init__(jid, password, verify_security=False)
-		self.handledTransports = dict()
+		self.handledOffers = dict()
 		self.load_capacity = load_capacity
 		self.availability = availability
 		self.delivery_count = 0
@@ -161,7 +161,7 @@ class CarrierAgent(agent.Agent):
 		contract.fromJSON(msg.body)
 		confirmMsg.body = (TransportContractConfirmation(contract.proposal)).toJSON()
 
-		self.handledTransports[msg.sender] = contract.proposal
+		self.handledOffers[msg.sender] = contract.proposal
 		return confirmMsg
 	
 	def generateACK(self, msg: Message) -> Message:

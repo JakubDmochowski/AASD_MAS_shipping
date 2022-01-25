@@ -111,6 +111,8 @@ class GiveDelivery(CyclicBehaviour):
             carrierDelivery = self._parent.getDeliveryItems(msg)
             deliveryToGive = {}
             for product_to_give in carrierDelivery.content:
+                if product_to_give not in self._parent.content:
+                    self._parent.content[product_to_give] = 0
                 quantity_to_give = carrierDelivery.content[product_to_give]
                 quantity_available = self._parent.content[product_to_give]
                 if product_to_give in self._parent.content:

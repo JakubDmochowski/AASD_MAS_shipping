@@ -6,7 +6,7 @@ from agents.availabilityManager import AvailabilityManagerAgent
 from agents.orderManager import OrderManagerAgent
 from agents.carrier import CarrierAgent
 from agents.Shop import ShopAgent
-from agents.client import ClientAgent
+from agents.Client import ClientAgent
 from agents.warehouse import WarehouseAgent
 from agents.producer import ProducerAgent
 

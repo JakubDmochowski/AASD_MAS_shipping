@@ -89,7 +89,7 @@ class CarrierAgent(agent.Agent):
 				await self.send(msg)
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
-				if msg and msg["protocol"] == "orderFromShopToCarrier":
+				if msg and msg.metadata["protocol"] == "orderFromShopToCarrier":
 					print("Carrier: Delivery started, product taken from source!: {}".format(msg.body))
 					self.agent.add_behaviour(self.agent.DeliverProductBehav())
 				else:

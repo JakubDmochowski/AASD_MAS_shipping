@@ -50,7 +50,7 @@ class ShopAgent(agent.Agent):
     def generateTransportRequest(self, to, order) -> Message:
         shopTranportRequestMsg = Message(to=str(to), sender=str(self.jid))
         shopTranportRequestMsg.set_metadata("performative", Performative.Request.value)
-        shopTranportRequestMsg.body = (TransportRequest(dst=self.jid, capacity=1, contents=order)).toJSON()
+        shopTranportRequestMsg.body = (TransportRequest(dst=str(self.jid), capacity=1, contents=order)).toJSON()
         return shopTranportRequestMsg
 
     def generateOrderReadToPickInfo(self, to) -> Message:

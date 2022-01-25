@@ -11,7 +11,7 @@ from agents.warehouse import WarehouseAgent
 def prepareAgents() -> List[Agent]:
 	return [
 		CarrierAgent("carrier1@localhost", dumb_password, 10, True),
-		OrderManagerAgent("order@localhost", dumb_password),
+		OrderManagerAgent("order@localhost", dumb_password, "availability@localhost", ["carrier1@localhost"]),
 		AvailabilityManagerAgent("availability@localhost", dumb_password, "producer@localhost", "warehouse@localhost",
 								 "order@localhost"),
 		WarehouseAgent("warehouse@localhost", dumb_password, 10, "availability@localhost", {"orange": 20}),

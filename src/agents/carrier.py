@@ -6,13 +6,13 @@ from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
 from messages.carrierDeliveryItems import CarrierDeliveryItems
-
 from messages.carrierDetailsReport import CarrierDetailsReport
 from messages.deliveryConfirmation import DeliveryConfirmation
 from messages.transportConfirmationRequest import TransportConfirmationRequest
 from messages.transportContractConfirmation import TransportContractConfirmation
 from messages.transportOffer import TransportOffer
 from messages.transportProposal import TransportProposal
+from common import Performative, setPerformative
 
 class CarrierAgent(agent.Agent):
 	class RecvDetailsRequestBehav(CyclicBehaviour):
@@ -71,7 +71,7 @@ class CarrierAgent(agent.Agent):
 		async def run(self):
 			for manager, proposal in self.agent.handledOffers.items():
 				msg = Message(to=manager)
-				msg.set_metadata('performative', 'info')
+				setPerformative(msg, Performative.Confirm)
 				msg.body = (DeliveryConfirmation(True, proposal)).toJSON()
 				await self.send(msg)
 				print("Carrier: Product delivered from {} to {}".format(proposal.offer.src, proposal.offer.dst))
@@ -140,7 +140,7 @@ class CarrierAgent(agent.Agent):
 		self.add_behaviour(self.RecvTranspOfferResolved(), offerResolved)
 
 	def generateTransportProposal(self, msg: Message) -> Message:
-		proposalMsg = Message(to=str(msg.sender), sender=str(self.jid))
+		proposalMsg = msg.make_reply()
 		proposalMsg.set_metadata("performative", "propose")
 		offer = TransportOffer()
 		offer.fromJSON(msg.body)

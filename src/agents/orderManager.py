@@ -23,7 +23,7 @@ class OrderManagerAgent(agent.Agent):
 	class TransportThread:
 		def __init__(self, offer: TransportOffer, id: str):
 			self.offer = offer
-			self.proposals: List[CarrierTransportProposal] = list()
+			self.proposals: List[OrderManagerAgent.CarrierTransportProposal] = list()
 			self.id = id
 			self.ended: bool = False
 			self.last_update: datetime = datetime.now()
@@ -103,7 +103,7 @@ class OrderManagerAgent(agent.Agent):
 				for thread in ag.transportThreads:
 					if msg.thread == thread.id:
 						proposal = TransportProposal()
-						proposal.fromJSON(msg.body)
+						proposal = proposal.fromMsg(msg)
 						carrierProposal = OrderManagerAgent.CarrierTransportProposal(proposal, msg)
 						thread.proposals.append(carrierProposal)
 						print(f"OrderManager: Appending proposal to thread {thread.id}. Count {len(thread.proposals)}")
@@ -218,5 +218,6 @@ class OrderManagerAgent(agent.Agent):
 		msg.to = str(carrierProposal.msg.sender)
 		msg.thread = thread.id
 		setPerformative(msg, Performative.AcceptProposal)
-		msg.body = TransportConfirmationRequest(carrierProposal.proposal).toJSON()
+		body = TransportConfirmationRequest(carrierProposal.proposal)
+		msg.body = body.toJSON()
 		return msg

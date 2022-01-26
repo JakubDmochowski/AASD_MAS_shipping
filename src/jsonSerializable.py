@@ -6,4 +6,8 @@ class JsonSerializable:
 		sort_keys=True, indent=4)
 	
 	def fromJSON(self, j):
+<<<<<<< HEAD
 		self.__dict__ = json.loads(j)
+=======
+		self.__dict__ = (jsonpickle.decode(j)).__dict__
+>>>>>>> pickle

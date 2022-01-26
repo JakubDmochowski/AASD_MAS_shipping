@@ -150,7 +150,7 @@ class RecvDelivery(CyclicBehaviour):
                     else:
                         self._parent.content[product_delivered] = qty_delivered
             print("Shop: Sending confirmation of delivery to carrier")
-            await self.send(self._parent.generateDeliveryReceiveConfirm(to=self._parent.msg.sender, content=carrierDelivery.content))
+            await self.send(self._parent.generateDeliveryReceiveConfirm(to=msg.sender, content=carrierDelivery.content))
             # check if delivery can close any order
             for client in self._parent.clients_orders:
                 product_to_pop_from_order = []

@@ -69,13 +69,16 @@ class CarrierAgent(agent.Agent):
 	
 	class DeliveryConfirmationBehav(OneShotBehaviour):
 		async def run(self):
+			to_del = []
 			for manager, proposal in self.agent.handledOffers.items():
-				msg = Message(to=manager)
+				msg = Message(to=str(manager))
 				setPerformative(msg, Performative.Confirm)
 				msg.body = (DeliveryConfirmation(True, proposal)).toJSON()
-				await self.send(msg)
+				to_del.append(manager)
 				print("Carrier: Product delivered from {} to {}".format(proposal.offer.src, proposal.offer.dst))
-				del self.agent.handledOffers[manager]
+				await self.send(msg)
+			for delet in to_del:
+				del self.agent.handledOffers[delet]
 
 	class ReceiveProductBehav(OneShotBehaviour):
 		async def run(self):
@@ -108,7 +111,7 @@ class CarrierAgent(agent.Agent):
 				await self.send(msg)
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
-				if msg and msg["protocol"] == "receiveDeliveryFromCarrier":
+				if msg and msg.get_metadata('protocol') == "receiveDeliveryFromCarrier":
 					print("Carrier: Delivery ended, product delivered to destination!; {}".format(msg.body))
 					self.agent.add_behaviour(self.agent.DeliveryConfirmationBehav())
 				else:

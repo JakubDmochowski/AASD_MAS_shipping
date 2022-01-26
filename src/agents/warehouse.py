@@ -73,7 +73,7 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 		msg = await self.receive(timeout=100)
 		if not msg:
 			return
-		print('Warehouse: recieved message {}, from {}'.format(msg.id, msg.sender))
+		print('Warehouse: recieved message {}, from {}'.format(msg.body, msg.sender))
 
 		items = CarrierDeliveryItems({})
 		items.fromMsg(msg)
@@ -99,16 +99,23 @@ class WarehousePickupRecieverBehaviour(CyclicBehaviour):
 		msg = await self.receive(timeout=100)
 		if not msg:
 			return
-		print('Warehouse: recieved message {}, from {}'.format(msg.id, msg.sender))
+		print('Warehouse: recieved message {}, from {}'.format(msg.body, msg.sender))
 
-		if msg.get_metadata('performative') == 'giveDeliveryToCarrier':
+		if msg.get_metadata('protocol') == 'giveDeliveryToCarrier':
 			items = CarrierDeliveryItems({})
 			items.fromMsg(msg)
 			self._parent.takeItems(items.content)
-			await self.send(self.prepareWarehouseReportMessage())
+			await self.send(self.giveItems(msg))
 
 	def prepareWarehouseReportMessage(self, msg) -> Message:
 		response = Message(to=str(self._parent.availabilityManJiD), sender=str(self.agent.jid), thread=msg.thread)
+		setPerformative(response, Performative.Inform)
+		response.body = (WarehouseStateReport(self._parent.content, self._parent.capacity)).toJSON()
+		return response
+	
+	def giveItems(self, msg) -> Message:
+		# TODO return proper msg to carrier
+		response = Message(to=str(msg.sender), sender=str(self.agent.jid), thread=msg.thread)
 		setPerformative(response, Performative.Inform)
 		response.body = (WarehouseStateReport(self._parent.content, self._parent.capacity)).toJSON()
 		return response

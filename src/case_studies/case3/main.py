@@ -25,6 +25,6 @@ def case3():
 	agents = prepareAgents()
 	for agent in agents:
 		agent.start().result()
-	time.sleep(15)
+	time.sleep(50)
 	for agent in agents:
 		agent.stop().result()

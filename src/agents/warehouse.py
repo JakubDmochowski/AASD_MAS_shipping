@@ -83,7 +83,6 @@ class WarehouseTransportRecieverBehaviour(CyclicBehaviour):
 		await self.send(reply)
 		await self.send(self.prepareWarehouseReportMessage(msg))
 
-#god fucking dammit, duplikacja kodu ale mało mnie to obchodzi
 	def prepareWarehouseReportMessage(self, msg) -> Message:
 		response = Message(to=str(self._parent.availabilityManJiD), sender=str(self.agent.jid), thread=msg.thread)
 		setPerformative(response, Performative.Inform)

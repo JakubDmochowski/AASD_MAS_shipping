@@ -5,4 +5,4 @@ class JsonSerializable:
 		return jsonpickle.encode(self)
 	
 	def fromJSON(self, j):
-		self = jsonpickle.decode(j)
+		self.__dict__ = (jsonpickle.decode(j)).__dict__

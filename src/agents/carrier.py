@@ -82,14 +82,14 @@ class CarrierAgent(agent.Agent):
 			print("Carrier: ReceiveProductBehav running")
 
 			for _, proposal in self.agent.handledOffers.items():
-				msg = Message(to=proposal['offer']['src'])
+				msg = Message(to=proposal.offer.src)
 				msg.set_metadata('performative', 'confirm')
 				msg.set_metadata('protocol', 'giveDeliveryToCarrier')
-				msg.body = (CarrierDeliveryItems(proposal['offer']['contents'])).toJSON()
+				msg.body = (CarrierDeliveryItems(proposal.offer.contents)).toJSON()
 				await self.send(msg)
 
 				msg = await self.receive(timeout=100) # wait for a message for 100 seconds
-				if msg and msg.metadata["protocol"] == "orderFromShopToCarrier":
+				if msg:
 					print("Carrier: Delivery started, product taken from source!: {}".format(msg.body))
 					self.agent.add_behaviour(self.agent.DeliverProductBehav())
 				else:

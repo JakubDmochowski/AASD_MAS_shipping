@@ -124,7 +124,7 @@ class OrderManagerAgent(agent.Agent):
 					print("OrderManager: thread has not enough proposals; retrying auction")
 					thread.ended = False # Fetch proposals and auction again
 					continue
-				print("OrderManager: resolve auction")
+				print(f"OrderManager: resolve auction for thread {thread.id}")
 				leftProposals, winner = ag.pickBestProposal(thread.proposals)
 				print(f"OrderManager: auction winner: {winner.msg.sender}")
 				thread.proposals = leftProposals

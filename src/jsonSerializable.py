@@ -1,9 +1,8 @@
-import json
+import jsonpickle
 
 class JsonSerializable:
 	def toJSON(self) -> str:
-		return json.dumps(self, default=lambda o: o.__dict__, 
-		sort_keys=True, indent=4)
+		return jsonpickle.encode(self)
 	
 	def fromJSON(self, j):
-		self.__dict__ = json.loads(j)
+		self = jsonpickle.decode(j)

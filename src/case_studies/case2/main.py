@@ -7,6 +7,8 @@ from agents.orderManager import OrderManagerAgent
 from agents.carrier import CarrierAgent
 from agents.producer import ProducerAgent
 from agents.warehouse import WarehouseAgent
+from agents.shop import ShopAgent
+from agents.client import ClientAgent
 
 def prepareAgents() -> List[Agent]:
 	return [
@@ -15,8 +17,9 @@ def prepareAgents() -> List[Agent]:
 		AvailabilityManagerAgent("availability@localhost", dumb_password, "producer@localhost", "warehouse@localhost",
 								 "order@localhost"),
 		WarehouseAgent("warehouse@localhost", dumb_password, 10, "availability@localhost", {"orange": 20}),
+		ShopAgent("shop@localhost", dumb_password, 15, {"apple": 15}, "availability@localhost", "order@localhost"),
+		ClientAgent("client@localhost", dumb_password, order={"orange": 5}, shop_name="shop@localhost")
 
-		ProducerAgent("producer@localhost", dumb_password, 15, "availability@localhost")
 	]
 
 def case2():
